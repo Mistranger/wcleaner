@@ -29,6 +29,6 @@ extern void write4bytes(FILE *file, uint32_t data);
 /// Write 4 bytes in little-endian format into memory
 extern void write4bytes_mem(void *mem, uint32_t data);
 /// Copy string and return a pointer to it in memory
-extern char* strclone(const char *str, uint32_t maxLen);
+extern char *strclone(const char *str, uint32_t maxLen);
 
 #endif

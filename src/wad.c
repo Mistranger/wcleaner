@@ -7,7 +7,7 @@
 // Pointer to currently opened wad file
 wFile_t *CurWadFile;
 
-wFile_t* Wad_Open(const char *filename)
+wFile_t *Wad_Open(const char *filename)
 {
 	FILE *file = fopen(filename, "rb");
 	int32_t lumpCount;
@@ -31,7 +31,7 @@ wFile_t* Wad_Open(const char *filename)
 	}
 
 	// Create wad file structure
-	wFile_t *wadFile = (wFile_t*)malloc(sizeof(wFile_t));
+	wFile_t *wadFile = (wFile_t *)malloc(sizeof(wFile_t));
 	memset(wadFile, 0, sizeof(wFile_t));
 	wadFile->name = strclone(filename, INT_MAX);
 	wadFile->file = file;
@@ -40,7 +40,7 @@ wFile_t* Wad_Open(const char *filename)
 
 	// Read all enrties
 	for (int i = 0; i < lumpCount; ++i) {
-		wEntry_t *entry = (wEntry_t*)malloc(sizeof(wEntry_t));
+		wEntry_t *entry = (wEntry_t *)malloc(sizeof(wEntry_t));
 		entry->data = NULL;
 		entry->offset = read4bytes(file);
 		entry->size = read4bytes(file);
@@ -78,12 +78,12 @@ void Wad_NewEntry(wFile_t *wFile, wEntry_t *before, wEntry_t *entry)
 			wFile->eEnd->next = entry;
 			wFile->eEnd = entry;
 		} else {
-		    entry->next = bef;
-		    entry->prev = bef->prev;
+			entry->next = bef;
+			entry->prev = bef->prev;
 			if (bef == wFile->eBegin) {
 				wFile->eBegin = entry;
 			} else {
-			    bef->prev->next = entry;
+				bef->prev->next = entry;
 			}
 			bef->prev = entry;
 		}
@@ -92,25 +92,25 @@ void Wad_NewEntry(wFile_t *wFile, wEntry_t *before, wEntry_t *entry)
 	wFile->size += entry->size;
 }
 
-wEntry_t* Wad_FindEntry(const wFile_t *wFile, const char *name, const wEntry_t *after, bool rev)
+wEntry_t *Wad_FindEntry(const wFile_t *wFile, const char *name, const wEntry_t *after, bool rev)
 {
 	for (wEntry_t *entry = rev ? wFile->eEnd : (after ? after->next : wFile->eBegin);
-        entry != NULL;
-        rev ? (entry = entry->prev) : (entry = entry->next)) {
-            if (!strncmp(entry->name, name, 8)) {
-                return entry;
-            }
+		 entry != NULL;
+		 rev ? (entry = entry->prev) : (entry = entry->next)) {
+		if (!strncmp(entry->name, name, 8)) {
+			return entry;
+		}
 	}
 	return NULL;
 }
 
 void Wad_DeleteEntry(wFile_t *wFile, wEntry_t *toDel)
 {
-    if (toDel == NULL) {
-        DebugPrint("ERROR: entry doesn't exist\n");
-        return;
-    }
-    wFile->size -= toDel->size;
+	if (toDel == NULL) {
+		DebugPrint("ERROR: entry doesn't exist\n");
+		return;
+	}
+	wFile->size -= toDel->size;
 	--wFile->lumpCount;
 	if (toDel->prev) {
 		toDel->prev->next = toDel->next;
@@ -130,15 +130,15 @@ void Wad_DeleteEntry(wFile_t *wFile, wEntry_t *toDel)
 
 void Wad_Output(const wFile_t *wFile, const char *outFile)
 {
-    bool overwrite = false;
-    char outputWad[260];
-    if (!outFile) {
-        overwrite = true;
-        strcpy(outputWad, wFile->name);
-        strcat(outputWad, ".temp");
-    } else {
-        strcpy(outputWad, outFile);
-    }
+	bool overwrite = false;
+	char outputWad[260];
+	if (!outFile) {
+		overwrite = true;
+		strcpy(outputWad, wFile->name);
+		strcat(outputWad, ".temp");
+	} else {
+		strcpy(outputWad, outFile);
+	}
 	FILE *input = wFile->file;
 	FILE *output = fopen(outputWad, "wb");
 	if (!output) {
@@ -151,7 +151,7 @@ void Wad_Output(const wFile_t *wFile, const char *outFile)
 	write4bytes(output, wFile->lumpCount);
 	write4bytes(output, 0); // dir will be filled later
 	uint32_t dirOffset = 0x0C; // data starts from offset 0x0C
-	int32_t *offsets = (int32_t*)malloc(wFile->lumpCount * sizeof(int32_t));
+	int32_t *offsets = (int32_t *)malloc(wFile->lumpCount * sizeof(int32_t));
 	int i = 0;
 
 	// Write all entries
@@ -163,7 +163,7 @@ void Wad_Output(const wFile_t *wFile, const char *outFile)
 			fwrite(entry->data, 1, entry->size, output);
 			free(entry->data);
 		} else {
-			uint8_t *buf = (uint8_t*)malloc(entry->size * sizeof(uint8_t));
+			uint8_t *buf = (uint8_t *)malloc(entry->size * sizeof(uint8_t));
 			fseek(input, entry->offset, SEEK_SET);
 			fread(buf, 1, entry->size, input);
 			fwrite(buf, 1, entry->size, output);
@@ -187,20 +187,20 @@ void Wad_Output(const wFile_t *wFile, const char *outFile)
 
 	// Erase original PWAD
 	if (overwrite) {
-        fclose(wFile->file);
-        remove(wFile->name);
+		fclose(wFile->file);
+		remove(wFile->name);
 
-        rename(outputWad, wFile->name);
+		rename(outputWad, wFile->name);
 	}
 }
 
 bool Wad_Close(wFile_t *wFile)
 {
-    for (wEntry_t *entry = wFile->eBegin; entry != NULL;) {
-        wEntry_t *old = entry;
-        entry = entry->next;
-        free(old);
-    }
+	for (wEntry_t *entry = wFile->eBegin; entry != NULL;) {
+		wEntry_t *old = entry;
+		entry = entry->next;
+		free(old);
+	}
 	fclose(wFile->file);
 	return true;
 }

@@ -9,7 +9,7 @@ typedef struct cFile_s {
 
 } cFile_t;
 
-extern cFile_t* C_LoadConfig(const char *name);
+extern cFile_t *C_LoadConfig(const char *name);
 
 extern int C_InitSettings(const char *name);
 
