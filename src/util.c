@@ -11,6 +11,15 @@ void PrintFunction(const char *func, const char *format, ...)
 	va_end(valist);
 	fflush(stdout);
 }
+
+void AbortAt(const char *file, int line, const char *funcName, const char *conditionStr)
+{
+	fprintf(stderr, "Assertion failed at %s:%d: %s: %s\n", file, line, funcName, conditionStr);
+	fflush(stdout);
+	fflush(stderr);
+	abort();
+}
+
 /*
 bool strncasecmp(const char *s1, const char *s2, size_t n)
 {

@@ -20,10 +20,16 @@
 
 #define _C_  ,    /// Debug , to simulate vararg macros
 
-FILE *my_stdout, *my_stderr;
+// Program settings
+typedef struct wSettings_s {
+	char *ConfigFile;
+	bool SupressDebug;
+} wSettings_t;
 
-extern bool SupressDebug;
+extern wSettings_t Settings;
+extern const char DefaultSettingsFileName[];
 
+extern void WC_Cleanup();
 extern void WC_Exit(int code);
 
 #endif

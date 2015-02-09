@@ -5,12 +5,23 @@
 #include "util.h"
 #include "wad.h"
 
+///////////////////////////////////////////////////////
+////Definitions////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+const char DefaultSettingsFileName[] = "config.cfg";
+wSettings_t Settings;
+
 /// Path to external IWAD
 char *ExternalIWAD;
 char *WorkPWAD;
 char *OutPWAD;
 bool SupressDebug;
 
+void WC_Cleanup()
+{
+
+}
 
 void WC_Exit(int code)
 {
@@ -20,19 +31,26 @@ void WC_Exit(int code)
 static void Usage()
 {
     fprintf(stdout, "Usage: wcleaner [OPTIONS] pwad\n");
-    fprintf(stdout, "\t-o outwad\t\tOutput optimized PWAD into outwad\n");
-    fprintf(stdout, "\t-s \t\t\tSupress debug output\n");
+    fprintf(stdout, "  -c configfile\tAlternative config file to load (instead of config.cfg)\n");
+    fprintf(stdout, "  -o outwad\tOutput optimized PWAD into outwad\n");
+    fprintf(stdout, "  -s \t\tSupress debug output\n");
 }
 
 void WC_ParseCmd(int argc, char **argv)
 {
+	Settings.ConfigFile = NULL;
     fprintf(stdout, "WCleaner 0.1 by cybermind - a tool to clean out your PWAD from garbage.\n");
     if (argc < 2) {
         Usage();
+        system("pause");
         WC_Exit(1);
     }
     for (;;) {
-		switch (getopt(argc, argv, "ho:s?")) {
+		switch (getopt(argc, argv, "c:ho:s?")) {
+		    case 'c': {
+                Settings.ConfigFile = optarg;
+                continue;
+		    }
 		    case 'o': {
                 OutPWAD = optarg;
                 continue;
@@ -52,6 +70,10 @@ void WC_ParseCmd(int argc, char **argv)
 		break;
     }
 
+	if (Settings.ConfigFile == NULL) {
+		Settings.ConfigFile = (char*)&DefaultSettingsFileName;
+	}
+
     if (!(argc - optind)) {
 		DebugPrint("Specify a PWAD to process.");
 		WC_Exit(1);
@@ -67,10 +89,6 @@ void WC_ParseCmd(int argc, char **argv)
 int WC_Main(int argc, char **argv)
 {
     int beforeOpt, afterOpt;
-
-    // open output files
-    my_stdout = freopen ("stdout.txt", "wb" /*or "wt"*/, stdout);
-	my_stderr = freopen ("stderr.txt", "wb" /*or "wt"*/, stderr);
 
     WC_ParseCmd(argc, argv);  // get command line options
 	CRC_Init();

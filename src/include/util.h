@@ -5,7 +5,11 @@ extern void PrintFunction(const char *func, const char *format, ...);
 //extern bool strncasecmp(const char *s1, const char *s2, size_t n);
 /// Print debug information with function name.
 #define DebugPrint(args) \
-	do { if (!SupressDebug) PrintFunction(__func__, args); } while (0)
+	do { if (!Settings.SupressDebug) PrintFunction(__func__, args); } while (0)
+#define Assert(cond) \
+	do { if (!(cond)) { AbortAt(__FILE__, __LINE__, __func__, #cond); }} while (0)
+
+extern void AbortAt(const char *file, int line, const char *funcName, const char *conditionStr);
 
 /// Integer power function
 int ipow(int num, int n);
