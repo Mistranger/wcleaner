@@ -51,7 +51,10 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUC)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
 endif()
 
-set_target_properties(wcleaner PROPERTIES LINK_FLAGS "${LINK_FLAGS} -static-libgcc -static-libstdc++ -Wl,--stack,10485760 -mconsole")
+set_target_properties(wcleaner PROPERTIES LINK_FLAGS "${LINK_FLAGS} -static-libgcc -static-libstdc++")
+if (WIN32)
+   set_target_properties(wcleaner PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--stack,10485760 -mconsole")
+endif(WIN32)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
