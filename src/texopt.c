@@ -553,7 +553,7 @@ static bool TexOpt_OptimizeFlats(wFile_t *wFile)
 
         }
         if (!delflat) {
-            DebugPrint("ERROR: flat %s not found\n" _C_ delflat);
+            DebugPrint("ERROR: flat %s not found\n" _C_ flatname);
         } else {
             Wad_DeleteEntry(wFile, delflat);
         }
@@ -619,15 +619,21 @@ static void TexOpt_LoadFlats(const wFile_t *wFile)
 		return;
 	}
 	// count flats
-	for (wEntry_t *flat = flatStart->next; flat && flat != flatEnd; ++flatCount, flat = flat->next) {
+	for (wEntry_t *flat = flatStart->next; flat && flat != flatEnd; flat = flat->next) {
+        if (flat->size == 4096) {
+            ++flatCount;
+        }
 	}
 
 	Flats = (tFlat_t *)malloc(flatCount * sizeof(tFlat_t));
 	// load them
 	size_t i = 0;
-	for (wEntry_t *flat = flatStart->next; flat && flat != flatEnd; ++i, flat = flat->next) {
-		memcpy(&Flats[i].name, flat->name, 8);
-		Flats[i].animated = false;
+	for (wEntry_t *flat = flatStart->next; flat && flat != flatEnd; flat = flat->next) {
+        if (flat->size == 4096) {
+            memcpy(&Flats[i].name, flat->name, 8);
+            Flats[i].animated = false;
+            ++i;
+        }
 	}
 	FlatCount = flatCount;
 	DebugPrint("Loaded %i flats\n" _C_ flatCount);
