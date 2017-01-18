@@ -322,11 +322,13 @@ static void TexOpt_FillUsedTextures(wFile_t *wFile)
 	for (size_t i = 0; i < p; ++i) {
 		memcpy(&UsedTextures[i * 8], &textures[offsets[i]], 8);
 	}
+	/*
 	FILE *sss = fopen("1sd.txt", "wb");
 	for (size_t i = 0; i < p; ++i) {
 		fwrite(&UsedTextures[i * 8], 8, 1, sss);
 	}
 	fclose(sss);
+	*/
 	free(offsets);
 	free(textures);
 }
@@ -545,8 +547,16 @@ static bool TexOpt_OptimizeFlats(wFile_t *wFile)
 		memcpy(flatname, flat->name, 8);
 		DebugPrint("Found unused flat %s\n" _C_ flatname);
 
+		wEntry_t *delflat = NULL;
 		// delete it
-		Wad_DeleteEntry(wFile, Wad_FindEntry(wFile, flatname, NULL, false));
+		while ((delflat = Wad_FindEntry(wFile, flatname, delflat, false)) && delflat->size != 4096) {
+
+        }
+        if (!delflat) {
+            DebugPrint("ERROR: flat %s not found\n" _C_ delflat);
+        } else {
+            Wad_DeleteEntry(wFile, delflat);
+        }
 	}
 	if (FlatCount) {
 		DebugPrint("Total %d unused flats (%i%% unused)\n" _C_ totalUnused _C_ totalUnused * 100 / FlatCount);
