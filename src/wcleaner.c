@@ -39,7 +39,7 @@ static void Usage()
 void WC_ParseCmd(int argc, char **argv)
 {
 	Settings.ConfigFile = NULL;
-	fprintf(stdout, "WCleaner 0.1 by cybermind - a tool to clean out your PWAD from garbage.\n");
+	fprintf(stdout, "WCleaner 1.0.2 by cybermind - a tool to clean out your PWAD from garbage.\n");
 	if (argc < 2) {
 		Usage();
 		system("pause");
